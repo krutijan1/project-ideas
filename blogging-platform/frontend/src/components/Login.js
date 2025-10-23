@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import './Login.css';
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -36,13 +35,24 @@ function Login() {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h2>Login</h2>
-        {error && <div className="error-message">{error}</div>}
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-8">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900">Login</h2>
+          <p className="mt-2 text-sm text-gray-600">Sign in to your account</p>
+        </div>
+        
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
+            <p className="font-medium">{error}</p>
+          </div>
+        )}
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+              Username
+            </label>
             <input
               type="text"
               id="username"
@@ -50,10 +60,15 @@ function Login() {
               value={formData.username}
               onChange={handleChange}
               required
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+              placeholder="Enter your username"
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
+          
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              Password
+            </label>
             <input
               type="password"
               id="password"
@@ -61,14 +76,25 @@ function Login() {
               value={formData.password}
               onChange={handleChange}
               required
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+              placeholder="Enter your password"
             />
           </div>
-          <button type="submit" disabled={loading}>
+          
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+          >
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-        <p className="auth-link">
-          Don't have an account? <Link to="/register">Register here</Link>
+        
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Don't have an account?{' '}
+          <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500 transition">
+            Register here
+          </Link>
         </p>
       </div>
     </div>
