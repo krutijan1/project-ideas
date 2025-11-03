@@ -177,39 +177,39 @@ function ArticleList() {
                     </div>
                   )}
                   
-                  <div className="flex flex-wrap gap-2">
-                    <Link 
-                      to={`/article/${article.id}`} 
-                      className="px-3 py-2 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition"
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Link
+                      to={`/article/${article.id}`}
+                      className="px-3 py-1 text-sm font-medium text-white bg-gray-600 rounded-md shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-transform transform hover:scale-105"
                     >
                       Read More
                     </Link>
                     {user && (
                       <>
-                        <Link 
-                          to={`/edit/${article.id}`} 
-                          className="px-3 py-2 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 transition"
+                        <Link
+                          to={`/edit/${article.id}`}
+                          className="px-3 py-1 text-sm font-medium text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-105"
                         >
                           Edit
                         </Link>
                         {article.is_published ? (
                           <button
                             onClick={() => handleUnpublish(article.id)}
-                            className="px-3 py-2 bg-orange-500 text-white text-sm rounded hover:bg-orange-600 transition"
+                            className="px-3 py-1 text-sm font-medium text-white bg-orange-500 rounded-md shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-transform transform hover:scale-105"
                           >
                             Unpublish
                           </button>
                         ) : (
                           <button
                             onClick={() => handlePublish(article.id)}
-                            className="px-3 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition"
+                            className="px-3 py-1 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-transform transform hover:scale-105"
                           >
                             Publish
                           </button>
                         )}
                         <button
                           onClick={() => handleDelete(article.id)}
-                          className="px-3 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition"
+                          className="px-3 py-1 text-sm font-medium text-white bg-red-600 rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-transform transform hover:scale-105"
                         >
                           Delete
                         </button>
