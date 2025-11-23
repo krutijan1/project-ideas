@@ -8,22 +8,26 @@ from django.shortcuts import get_object_or_404
 from .models import Article
 from .serializers import ArticleSerializer, ArticleListSerializer
 from .filters import ArticleFilter
+from .permissions import IsAuthorOrReadOnly
 
 
 class ArticleViewSet(viewsets.ModelViewSet):
     """
-    ViewSet for Article CRUD operations:
-    - list: GET /api/articles/ - Returns published articles (or all if authenticated with ?show_unpublished=true)
-    - retrieve: GET /api/articles/{id}/ - Returns a single article
+    ViewSet for Article CRUD operations with author-based authorization:
+    - list: GET /api/articles/ - Returns user's own articles when authenticated, all published articles when anonymous
+      * Use ?show_unpublished=true to include unpublished articles (authenticated users only)
+    - retrieve: GET /api/articles/{id}/ - Returns a single article (anyone can view published articles)
     - create: POST /api/articles/ - Creates a new article as draft (requires authentication)
-    - update: PUT /api/articles/{id}/ - Updates an article (requires authentication)
-    - partial_update: PATCH /api/articles/{id}/ - Partially updates an article (requires authentication)
-    - destroy: DELETE /api/articles/{id}/ - Deletes an article (requires authentication)
-    - publish: POST /api/articles/{id}/publish/ - Publishes an article (requires authentication)
-    - unpublish: POST /api/articles/{id}/unpublish/ - Unpublishes an article (requires authentication)
+    - update: PUT /api/articles/{id}/ - Updates an article (only author can update)
+    - partial_update: PATCH /api/articles/{id}/ - Partially updates an article (only author can update)
+    - destroy: DELETE /api/articles/{id}/ - Deletes an article (only author can delete)
+    - publish: POST /api/articles/{id}/publish/ - Publishes an article (only author can publish)
+    - unpublish: POST /api/articles/{id}/unpublish/ - Unpublishes an article (only author can unpublish)
+    
+    Authorization is enforced via IsAuthorOrReadOnly permission class.
     """
     queryset = Article.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthorOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = ArticleFilter
     search_fields = ['title', 'content', 'tags']
@@ -40,17 +44,20 @@ class ArticleViewSet(viewsets.ModelViewSet):
             return queryset
         
         # For list view, apply filters
-        # If user is authenticated and requests to see unpublished articles
         if self.request.user.is_authenticated:
+            # Authenticated users only see their own articles
+            queryset = queryset.filter(author=self.request.user)
+            
+            # Check if they want to filter by publish status
             show_unpublished = self.request.query_params.get('show_unpublished', 'false').lower() == 'true'
-            if show_unpublished:
-                # Show all articles (published and unpublished)
-                return queryset
-            else:
-                # Show only published articles
-                return queryset.filter(publishing_date__isnull=False)
+            if not show_unpublished:
+                # Show only their published articles
+                queryset = queryset.filter(publishing_date__isnull=False)
+            # else: Show all their articles (published and unpublished)
+            
+            return queryset
         else:
-            # Anonymous users only see published articles
+            # Anonymous users only see published articles from all authors
             return queryset.filter(publishing_date__isnull=False)
     
     def get_serializer_class(self):
@@ -65,15 +72,8 @@ class ArticleViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def publish(self, request, pk=None):
-        """Publish an article"""
-        article = self.get_object()
-        
-        # Check if user is the author
-        if article.author != request.user:
-            return Response(
-                {'error': 'You can only publish your own articles'},
-                status=status.HTTP_403_FORBIDDEN
-            )
+        """Publish an article (author authorization handled by IsAuthorOrReadOnly permission)"""
+        article = self.get_object()  # Permission check happens here
         
         if article.publishing_date is not None:
             return Response(
@@ -82,6 +82,23 @@ class ArticleViewSet(viewsets.ModelViewSet):
             )
         
         article.publishing_date = timezone.now()
+        article.save()
+        
+        serializer = self.get_serializer(article)
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'])
+    def unpublish(self, request, pk=None):
+        """Unpublish an article (author authorization handled by IsAuthorOrReadOnly permission)"""
+        article = self.get_object()  # Permission check happens here
+        
+        if article.publishing_date is None:
+            return Response(
+                {'error': 'Article is already unpublished'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        article.publishing_date = None
         article.save()
         
         serializer = self.get_serializer(article)

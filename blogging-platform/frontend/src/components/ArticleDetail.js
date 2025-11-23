@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { articleAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 function ArticleDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -85,20 +87,22 @@ function ArticleDetail() {
             </svg>
             Back to Articles
           </Link>
-          <div className="flex space-x-3">
-            <Link 
-              to={`/edit/${article.id}`} 
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-            >
-              Edit Article
-            </Link>
-            <button 
-              onClick={handleDelete} 
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-            >
-              Delete Article
-            </button>
-          </div>
+          {user && article.author === user.id && (
+            <div className="flex space-x-3">
+              <Link 
+                to={`/edit/${article.id}`} 
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+              >
+                Edit Article
+              </Link>
+              <button 
+                onClick={handleDelete} 
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+              >
+                Delete Article
+              </button>
+            </div>
+          )}
         </div>
 
         <article className="bg-white rounded-lg shadow-lg overflow-hidden">

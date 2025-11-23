@@ -31,10 +31,6 @@ function ArticleList() {
     return () => clearTimeout(tagTimer);
   }, [tagFilter]);
 
-  useEffect(() => {
-    fetchArticles();
-  }, [debouncedSearch, debouncedTag, showUnpublished, user]);
-
   const fetchArticles = useCallback(async () => {
     try {
       setLoading(true);
@@ -53,6 +49,10 @@ function ArticleList() {
       setLoading(false);
     }
   }, [debouncedSearch, debouncedTag, showUnpublished, user]);
+
+  useEffect(() => {
+    fetchArticles();
+  }, [fetchArticles]);
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this article?')) {
