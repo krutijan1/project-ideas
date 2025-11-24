@@ -36,6 +36,9 @@ db.sqlite3-journal
 # Environment variables
 .env
 
+# Google Cloud
+app.yaml
+
 # IDE
 .vscode/
 .idea/

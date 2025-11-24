@@ -26,7 +26,12 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-8*d=4v5sy=a0m$n#b_r4j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '.appspot.com',  # Allow App Engine domains
+    'blogging-platform-479123.appspot.com',
+]
 
 
 # Application definition
@@ -141,6 +146,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8001",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:8001",
+    "https://blogging-platform-479123.appspot.com",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -164,6 +170,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8001",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:8001",
+    "https://blogging-platform-479123.appspot.com",
 ]
 
 # Default primary key field type

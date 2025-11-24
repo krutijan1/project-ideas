@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001/api';
+// Use relative URL in production (when served from same domain as backend)
+// or environment variable, otherwise default to localhost for development
+const API_BASE_URL = process.env.REACT_APP_API_URL || 
+  (window.location.hostname === 'localhost' ? 'http://localhost:8001/api' : '/api');
 
 // Function to get CSRF token from cookies
 function getCookie(name) {
